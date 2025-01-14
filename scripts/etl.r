@@ -1,4 +1,4 @@
-
+# Carregar pacotes necessários
 library(dplyr)
 library(DBI)
 library(RSQLite)
@@ -6,43 +6,29 @@ library(arrow)
 library(ggplot2)
 library(lubridate)
 
+# Carregar funções auxiliares
+source("scripts/utils.R")
 
+# Caminhos dos dados
 sales_dir <- "data/sales/"
 database_path <- "data/database.sqlite"
 output_parquet <- "output/faturamento_agrupado.parquet"
 output_plots <- "output/"
 
-
-read_sales_data <- function(directory) {
-  sales_files <- list.files(directory, pattern = "\\.csv$", full.names = TRUE)
-  sales_data <- lapply(sales_files, read.csv)
-  return(bind_rows(sales_data))
-}
-
-
-read_sqlite_data <- function(database_path, table_name) {
-  con <- dbConnect(RSQLite::SQLite(), database_path)
-  data <- dbReadTable(con, table_name)
-  dbDisconnect(con)
-  return(data)
-}
-
-
+# Extração dos dados
 sales_data <- read_sales_data(sales_dir)
 products <- read_sqlite_data(database_path, "produtos")
 categories <- read_sqlite_data(database_path, "categorias")
 
-
-sales_data <- sales_data %>%
-  mutate(faturamento = quantidade * preco_unitario) %>%
-  mutate(data = as.Date(data))
+# Transformação dos dados
+sales_data <- calculate_revenue(sales_data, "quantidade", "preco_unitario")
 
 consolidated_data <- sales_data %>%
   left_join(products, by = "produto_id") %>%
   left_join(categories, by = "categoria_id") %>%
-  mutate(categoria = ifelse(is.na(nome_categoria), "Desconhecida", nome_categoria))
+  handle_missing_categories("nome_categoria")
 
-
+# Agregação
 faturamento_por_categoria <- consolidated_data %>%
   group_by(categoria) %>%
   summarise(faturamento_total = sum(faturamento, na.rm = TRUE))
@@ -52,18 +38,20 @@ faturamento_mensal <- consolidated_data %>%
   group_by(mes) %>%
   summarise(faturamento_mensal = sum(faturamento, na.rm = TRUE))
 
+# Armazenamento
+save_as_parquet(consolidated_data, output_parquet)
 
-write_parquet(consolidated_data, output_parquet)
-
-
-ggplot(faturamento_por_categoria, aes(x = reorder(categoria, -faturamento_total), y = faturamento_total)) +
+# Relatórios
+plot1 <- ggplot(faturamento_por_categoria, aes(x = reorder(categoria, -faturamento_total), y = faturamento_total)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   labs(title = "Faturamento por Categoria", x = "Categoria", y = "Faturamento Total") +
-  theme_minimal() +
-  ggsave(paste0(output_plots, "faturamento_por_categoria.png"))
+  theme_minimal()
 
-ggplot(faturamento_mensal, aes(x = mes, y = faturamento_mensal)) +
+save_plot(plot1, paste0(output_plots, "faturamento_por_categoria.png"))
+
+plot2 <- ggplot(faturamento_mensal, aes(x = mes, y = faturamento_mensal)) +
   geom_line(color = "darkgreen", size = 1) +
   labs(title = "Evolução Mensal do Faturamento", x = "Mês", y = "Faturamento Mensal") +
-  theme_minimal() +
-  ggsave(paste0(output_plots, "evolucao_faturamento_mensal.png"))
+  theme_minimal()
+
+save_plot(plot2, paste0(output_plots, "evolucao_faturamento_mensal.png"))
