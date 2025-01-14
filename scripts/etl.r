@@ -12,8 +12,8 @@ source("scripts/utils.R")
 # Caminhos dos dados
 sales_dir <- "data/sales/"
 database_path <- "data/database.sqlite"
-output_parquet <- "output/faturamento_agrupado.parquet"
-output_plots <- "output/"
+output_parquet <- "output_/faturamento_agrupado.parquet"
+output_plots <- "output_/"
 
 # Extração dos dados
 sales_data <- read_sales_data(sales_dir)

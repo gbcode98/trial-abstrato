@@ -108,10 +108,10 @@ O banco de dados contém duas tabelas:
 ## **Gráficos Gerados**
 
 1. **Faturamento por Categoria**  
-   ![Faturamento por Categoria](output/faturamento_por_categoria.png)
+   ![Faturamento por Categoria](output_/faturamento_por_categoria.png)
 
 2. **Evolução do Faturamento Mensal**  
-   ![Evolução do Faturamento Mensal](output/evolucao_faturamento_mensal.png)
+   ![Evolução do Faturamento Mensal](output_/evolucao_faturamento_mensal.png)
 
 ---
 
