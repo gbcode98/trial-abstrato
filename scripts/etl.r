@@ -10,7 +10,7 @@ library(lubridate)
 source("scripts/utils.R")
 
 # Caminhos dos dados
-sales_dir <- "data/sales/"
+sales_dir <- "data/sales_/"
 database_path <- "data/database.sqlite"
 output_parquet <- "output_/faturamento_agrupado.parquet"
 output_plots <- "output_/"

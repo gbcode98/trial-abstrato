@@ -8,12 +8,12 @@ Este projeto implementa um pipeline de dados completo para processar informaçõ
 
 ```plaintext
 ├── data/
-│   ├── sales/            # Diretório contendo os arquivos CSV de vendas
+│   ├── sales_/            # Diretório contendo os arquivos CSV de vendas
 │   ├── database.sqlite   # Banco de dados SQLite com informações de produtos e categorias
 ├── scripts/
 │   ├── etl.R             # Script principal para o pipeline de ETL
 │   ├── utils.R           # Funções auxiliares utilizadas no projeto
-├── output/
+├── output_/
 │   ├── faturamento_agrupado.parquet   # Arquivo parquet com os dados transformados
 │   ├── faturamento_por_categoria.png  # Gráfico de faturamento por categoria
 │   ├── evolucao_faturamento_mensal.png  # Gráfico de evolução mensal do faturamento
