@@ -1,0 +1,47 @@
+library(DBI)
+library(RSQLite)
+
+# Caminho para o banco de dados SQLite
+database_path <- "data/database.sqlite"
+
+# Conectar ao banco de dados
+con <- dbConnect(SQLite(), database_path)
+
+# Criar a tabela de produtos
+dbExecute(con, "
+  CREATE TABLE produtos (
+    produto_id INTEGER PRIMARY KEY,
+    nome_produto TEXT NOT NULL,
+    categoria_id INTEGER
+  );
+")
+
+# Criar a tabela de categorias
+dbExecute(con, "
+  CREATE TABLE categorias (
+    categoria_id INTEGER PRIMARY KEY,
+    nome_categoria TEXT NOT NULL
+  );
+")
+
+# Inserir dados na tabela de categorias
+dbExecute(con, "
+  INSERT INTO categorias (categoria_id, nome_categoria) VALUES
+  (1, 'Eletrônicos'),
+  (2, 'Eletrodomésticos'),
+  (3, 'Móveis');
+")
+
+# Inserir dados na tabela de produtos
+dbExecute(con, "
+  INSERT INTO produtos (produto_id, nome_produto, categoria_id) VALUES
+  (1, 'Smartphone', 1),
+  (2, 'Geladeira', 2),
+  (3, 'Sofá', 3),
+  (4, 'TV', 1),
+  (5, 'Micro-ondas', 2),
+  (6, 'Mesa de Jantar', 3);
+")
+
+# Fechar a conexão
+dbDisconnect(con)
